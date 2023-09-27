@@ -78,10 +78,15 @@ public class Main {
                 ans[i] = tries.get(0)[i];
                 bulls_amount++;
             } else if(compares.get(0)[i] == 1) {
+                cows[cows_amount] = new ArrayList<>();
                 cows[cows_amount].set(0, tries.get(0)[i]);
                 cows[cows_amount].add(i);
                 cows_amount++;
             }
+        }
+        if (bulls_amount == 4) {
+            printArr(ans);
+            return;
         }
         System.out.println("First combination is 0123");
         // Вторая попытка угадывания.
@@ -94,27 +99,44 @@ public class Main {
                 ans[i] = tries.get(1)[i];
                 bulls_amount++;
             } else if(compares.get(1)[i] == 1) {
-                cows[cows_amount].set(0, tries.get(1)[i]);
+                cows[cows_amount] = new ArrayList<>();
+                cows[cows_amount].add(tries.get(1)[i]);
                 cows[cows_amount].add(i);
                 cows_amount++;
             }
         }
 
+        if (cows_amount == 2) {
+            cows[cows_amount] = new ArrayList<>();
+            cows[cows_amount].add(8);
+            cows_amount++;
+            cows[cows_amount] = new ArrayList<>();
+            cows[cows_amount].add(9);
+            cows_amount++;
+        } else if (cows_amount == 3) {
+
+        }
+
 
         System.out.println("Second combination is 4567");
+        if (bulls_amount == 4) {
+            printArr(ans);
+            return;
+        }
         // Третяя попытка угадывания.
         tries.add(new int[4]);
 
         // Формируем комбинацию.
-        int place_of_first_cow = cows[0].get(0);
+
         for (int i = 0; i < 4; i++) {
-            if (i != place_of_first_cow) {
+            if (i != cows[0].get(1)) {
                 tries.get(2)[i] = cows[0].get(0);
+                cows[0].add(i);
                 cows_iterator++;
             } else {
-                if (cows_amount == 4) {
-                    tries.get(2)[i] = cows[1].get(0); // дописать этот случай
-                }
+                tries.get(2)[i] = cows[1].get(0);
+                cows[1].add(i);
+                cows_iterator++;
             }
         }
 
@@ -123,20 +145,56 @@ public class Main {
 
         // Проверка на быков и коров.
         for (int i = 0; i < 4; i++) {
-            if (tries.get(2)[i] == 2) {
-                ans[i] = compares.get(1)[i];
+            if (compares.get(2)[i] == 2) {
+                ans[i] = tries.get(2)[i];
                 bulls_amount++;
             } else if(tries.get(2)[i] == 1) {
-                cows[cows_amount].set(0, compares.get(2)[i]);
+                cows[cows_amount] = new ArrayList<>();
+                cows[cows_amount].add(tries.get(2)[i]);
+                cows[cows_amount].add(i);
                 cows_amount++;
             }
+        }
+
+        if (bulls_amount == 4) {
+            printArr(ans);
+            return;
         }
 
         // Четвертая попытка.
         tries.add(new int[4]);
 
+        for (int i = 0; i < 4; i++) {
+            if ((i == cows[1].get(1)) || (i == cows[1].get(2))) {
+                tries.get(3)[i] = cows[2].get(0);
+                cows[2].add(i);
+                cows_iterator++;
+            } else {
+                tries.get(3)[i] = cows[1].get(0);
+                cows[1].add(i);
+                cows_iterator++;
+            }
+        }
 
+        compares.add(new int[4]);
+        compares.set(3, compareArrs(secret, tries.get(3)));
 
+        for (int i = 0; i < 4; i++) {
+            if (compares.get(3)[i] == 2) {
+                ans[i] = tries.get(3)[i];
+                bulls_amount++;
+            } else if(tries.get(3)[i] == 1) {
+                cows[cows_amount] = new ArrayList<>();
+                cows[cows_amount].add(tries.get(3)[i]);
+                cows[cows_amount].add(i);
+                cows_amount++;
+            }
+        }
+
+        if (bulls_amount == 4) {
+            printArr(ans);
+            return;
+        }
     }
 
     public static int[] inputSecret(Scanner in) {
@@ -155,11 +213,7 @@ public class Main {
 
         int[] input = inputSecret(scanner);
 
-        int[] ans = compareArrs(secret, input);
-
-        printArr(ans);
-
-        
+        bullsNCows(input);
 
     }
 }
